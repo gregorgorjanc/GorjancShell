@@ -19,3 +19,14 @@ if [ -f ~/bin/func_foo.sh ]; then
   source ~/bin/func_foo.sh
 fi
 ```
+
+or for a set of functions
+
+```shell
+FUNCS="func_foo1.sh
+       func_foo2.sh"
+for FILE in ${FUNCS}; do
+  if [ -f "~/bin/${FILE}" ]; then
+    source ~/bin/${FILE}
+  fi
+done
