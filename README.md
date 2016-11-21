@@ -14,7 +14,8 @@ files named *foo.sh*.
 2. Add ~/bin folder to your PATH variable, i.e., export PATH=~/bin:$PATH
 3. Add the following code to your ~/.bashrc file for each function you want to use
 
+```shell
 if [ -f ~/bin/func_foo.sh ]; then
   source ~/bin/func_foo.sh
 fi
-
+```
