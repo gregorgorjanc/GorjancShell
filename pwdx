@@ -1,0 +1,4 @@
+#!/bin/bash
+
+PWDX=$(lsof -a -p $1 -d cwd -Fn | tail -1 | sed 's/.//')
+echo $1 $PWDX
