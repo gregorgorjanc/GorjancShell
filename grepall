@@ -1,0 +1,44 @@
+#!/usr/bin/env perl
+
+#eval "exec perl -S $0 $*"
+#    if $running_under_some_shell;
+#
+# Matt Schwab 15Oct94
+#
+# What: Grep all files in given tree
+#
+# http://sepwww.stanford.edu/software/scripts.html [2005-08-31]
+#
+# keywords clean grep find
+
+if ($#ARGV==-1) {
+   print "Usage: $0 dir keyword [keyword ..]\n";
+   print "Lists all text (non-binary) files in the directory subtree\n";
+   print "that contain any of the keywords.\n";
+   print "\n";
+   print "See also: Execstat Figstat Wastestat Tour Grepper\n";
+   exit;
+   }
+
+chdir $ARGV[0] || die "Can't chdir to $ARGV[0] \n";
+shift  @ARGV;
+
+open(FIND,"find . -print |") || die "Can't run find: $!\n";
+
+FILE:
+while ($filename = <FIND>) {
+  chop $filename;
+  next FILE unless -T $filename;
+  if (!open(TEXTFILE, $filename)) {
+    print STDERR "Can't open $filename - continuing ...\n";
+    next FILE;
+  }
+  while (<TEXTFILE>) {
+    foreach $word (@ARGV) {
+      if (index($_, $word) >= 0) {
+        print $filename, "\n";
+        next FILE;
+      }
+    }
+  }
+}
