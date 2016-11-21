@@ -6,13 +6,14 @@ Gregor Gorjanc's (bash) shell functions and scripts
 A set of functions and scripts that make my life easier when working in shell/terminal.
 
 Functions are stored in files named *func_foo.sh* while scripts are stored in
-files named *foo.sh*.
+files named *foo*.
 
 ## Instalation
 
 1. Save the files in your ~/bin folder
 2. Add ~/bin folder to your PATH variable, i.e., export PATH=~/bin:$PATH
-3. Add the following code to your ~/.bashrc file for each function you want to use
+3. In order to be able to use functions, add the following code to your ~/.bashrc
+file for each function you want to use:
 
 ```shell
 if [ -f ~/bin/func_foo.sh ]; then
@@ -20,7 +21,7 @@ if [ -f ~/bin/func_foo.sh ]; then
 fi
 ```
 
-or for a set of functions
+or for a set of functions:
 
 ```shell
 FUNCS="func_foo1.sh
@@ -30,3 +31,4 @@ for FILE in ${FUNCS}; do
     source ~/bin/${FILE}
   fi
 done
+```
