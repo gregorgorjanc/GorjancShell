@@ -23,7 +23,7 @@ The functions/scripts are:
   * [server](func_server.sh) - generate a set of aliases for a set of servers
   * [qstat*,qdelall](func_sge.sh) - manipulate SGE cluster jobs
   * [stop,reboot](func_stop.sh) - stop and reboot computer
-  * [sys_info](fuinc_sys_info.sh) - retrieve system information (RAM, processors, disk, ...)
+  * [sys_info](func_sys_info.sh) - retrieve system information (RAM, processors, disk, ...)
   * [x2y](func_x2y.sh) - convert files from one type to another
   * [tarc,tarx,zipc,zipx](func_zip.sh) - (un)compress a given folder
   * [grepall](grepall) - grep recursively
