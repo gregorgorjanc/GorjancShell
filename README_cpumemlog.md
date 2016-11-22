@@ -3,7 +3,7 @@ Monitor CPU and RAM usage of a process (and its children)
 
 ## Description
 
-**cpumemlog.sh** is a Bash shell script that monitors CPU and RAM usage of a given
+**cpumemlog** is a Bash shell script that monitors CPU and RAM usage of a given
 process and its children. The main aim for writing this script was to get insight
 about the behaviour of a process and to spot bottlenecks without GUI tools, e.g.,
 cpumemlog.sh it is very useful to spot that the computationally intensive process
@@ -16,7 +16,7 @@ it is tedious to stare at its dynamic output and quite hard to spot consumption 
 the peak and follow the trends etc. Yet another similar utility is [time](http://man7.org/linux/man-pages/man1/time.1.html), which though only gives
 consumption of resources at the peak.
 
-**cpumemlogplot.R** is a companion [R](http://www.r-project.org) script to cpumemlog.sh
+**cpumemlogplot** is a companion [R](http://www.r-project.org) script to cpumemlog.sh
 used to summarize and plot the gathered data.
 
 ## Usage
