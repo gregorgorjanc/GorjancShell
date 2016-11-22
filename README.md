@@ -1,14 +1,17 @@
-# ggshell
+# Gorjanc Shell
 Gregor Gorjanc's (bash) shell functions and scripts
 
 ## Description
 
 A set of functions and scripts that make my life easier when working in shell/terminal.
 
+The functions/scripts are:
+  * [cwdiff](cwdiff) color word diff (originally from Iain Murray)
+
+## Installation
+
 Functions are stored in files named *func_foo.sh* while scripts are stored in
 files named *foo*.
-
-## Instalation
 
 1. Save the files in your ~/bin folder
 2. Add ~/bin folder to your PATH variable, i.e., export PATH=~/bin:$PATH
