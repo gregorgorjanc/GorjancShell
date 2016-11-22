@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# From Iain Murray, Edinburgh
+
 # Discard any options, for example SVN attempts to set a bunch of GNU diff
 # options
 shift $(($# - 2))

@@ -1,0 +1,183 @@
+#!/usr/bin/env Rscript
+
+### cpumemlogplot
+###----------------------------------------------------------------------------
+
+args <- commandArgs(TRUE)
+
+help <- function()
+{
+  cat("
+
+  Summarize and plot cpumemlog.sh output
+
+  Usage:
+    cpumemlogplot.R [argument(s)] [file(s)]
+
+  Arguments:
+    --help      - print this text
+
+    --mega,-m   - plot memory usage in MB (GB is default)
+
+    --group,-g  - group process's data by process (command) name
+
+    --labels,-l - use directlabels to position process labels onto lines
+                  instead of using a legend
+
+  Example:
+    Summarize and plot output stored in file ...
+
+      cpumemlogplot.R cpumemlog_5026.txt
+
+    Summarize and plot output - show RAM usage in megabytes
+
+      cpumemlogplot.R --mega cpumemlog_5026.txt
+
+    Summarize and plot output stored in files ...
+
+      cpumemlogplot.R cpumemlog_5026.txt cpumemlog_1000.txt
+
+  Author
+    Gregor Gorjanc <gregor dot gorjanc at gmail dot com>
+
+  Web
+    http://github.com/gregorgorjanc/cpumemlog\n\n")
+  q(save="no")
+}
+
+if(length(args) < 1 | "--help" %in% args) {
+  help()
+}
+
+binPower <- 20
+binUnit <- "Gb"
+test <- c("--mega", "-m") %in% args
+if(any(test)) {
+  args <- args[!(args %in% c("--mega", "-m"))]
+  binPower <- 10
+  binUnit <- "Mb"
+}
+
+test <- c("--group", "-g") %in% args
+if(any(test)) {
+  args <- args[!(args %in% c("--group", "-g"))]
+  group <- TRUE
+} else {
+  group <- FALSE
+}
+
+test <- c("--labels", "-l") %in% args
+if(any(test)) {
+  args <- args[!(args %in% c("--labels", "-l"))]
+  labels <- TRUE
+} else {
+  labels <- FALSE
+}
+
+# Colection of colors from ColorBrewer
+.color <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33",
+            "#A65628", "#F781BF", "#999999", "#1B9E77", "#D95F02", "#7570B3",
+            "#E7298A", "#66A61E", "#E6AB02", "#A6761D", "#666666", "#7FC97F",
+            "#BEAED4", "#FDC086", "#FFFF99", "#386CB0", "#F0027F", "#BF5B17",
+            "#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C",
+            "#FDBF6F", "#CAB2D6", "#6A3D9A", "#B15928", "#66C2A5", "#FC8D62",
+            "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#B3B3B3",
+            "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462",
+            "#B3DE69", "#FCCDE5", "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
+
+options(width=300)
+
+library(package="doBy")
+library(package="reshape2")
+library(package="ggplot2")
+
+if(labels) {
+  library(package="directlabels")
+}
+
+for(file in args) {
+  ## file <- args[1]
+
+  cat("File:", file, "\n")
+
+  ## --- Handle data ---
+
+  dat <- read.table(file=file, header=TRUE, fill=TRUE)
+  cols <- c("PID", "PCPU", "PMEM", "VSZ", "RSS")
+  dat[, cols] <- lapply(dat[, cols], as.numeric)
+  sel <- grepl(pattern="defunct", x=dat$DATE)
+  dat <- dat[!sel, ]
+  dat$X <- as.POSIXct(paste(dat$DATE, dat$TIME))
+  dat$RSS <- dat$RSS / 2^binPower
+  if (!group) {
+    dat$COMMAND <- paste(dat$COMMAND, as.numeric(factor(paste(dat$COMMAND, dat$PID, sep="_"))), sep="_")
+  }
+
+
+  ## Summarize
+  sink(file=paste(file, "mem_stat.txt", sep="_"), split=TRUE)
+  cat(paste("\nRAM - RSS (", binUnit, "):\n", sep=""))
+  tmp <- summaryBy(RSS ~ 1, data=dat, FUN=descStat)
+  print(tmp)
+  cat(paste("\nRAM - RSS by command (", binUnit, "):\n", sep=""))
+  tmp <- summaryBy(RSS ~ COMMAND, data=dat, FUN=descStat)
+  print(tmp)
+  sink()
+
+  sink(file=paste(file, "cpu_stat.txt", sep="_"), split=TRUE)
+  cat("\nCPU:\n")
+  tmp <- summaryBy(PCPU ~ 1, data=dat, FUN=descStat)
+  print(tmp)
+  cat("\nCPU by command:\n")
+  tmp <- summaryBy(PCPU ~ COMMAND, data=dat, FUN=descStat)
+  print(tmp)
+  sink()
+
+  sink(file=paste(file, "time_stat.txt", sep="_"), split=TRUE)
+  cat("\nTIME:\n")
+  dat$TIME <- dat$X
+  tmp <- summaryBy(TIME ~ 1, data=dat, FUN=function(x) c(min=min(x), max=max(x)))
+  ## TODO: is this origin stuff portable? Could we get origin from dat$X somehow?
+  tmp[, ] <- lapply(tmp[, ], FUN=as.POSIXct, origin="1970-01-01")
+  tmp$TIME.diff <- tmp$TIME.max - tmp$TIME.min
+  print(tmp)
+  cat("\nTIME by command:\n")
+  tmp <- summaryBy(TIME ~ COMMAND, data=dat, FUN=function(x) c(min=min(x), max=max(x)))
+  tmp[, -1] <- lapply(tmp[, -1], FUN=as.POSIXct, origin="1970-01-01")
+  tmp$TIME.diff <- tmp$TIME.max - tmp$TIME.min
+  print(tmp)
+  sink()
+
+  ## --- Plot ---
+
+  p <- ggplot(aes(x=X, y=RSS, colour=COMMAND), data=dat)
+  p <- p + geom_line()
+  p <- p + xlab(label="Time")
+  p <- p + ylab(label=paste0("RAM - RSS (", binUnit, ")"))
+  p <- p + scale_color_manual(values=.color)
+
+  png(file=paste(file, "mem_plot.png", sep="_"), width=480*1.5, height=480)
+  if(labels) {
+    print(direct.label(p, method="last.points"))
+  } else {
+    print(p)
+  }
+  dev.off()
+
+  p <- ggplot(aes(x=X, y=PCPU, colour=COMMAND), data=dat)
+  p <- p + geom_line()
+  p <- p + xlab(label="Time")
+  p <- p + ylab(label="CPU (%)")
+  p <- p + scale_color_manual(values=.color)
+  png(file=paste(file, "cpu_plot.png", sep="_"), width=480*1.5, height=480)
+  if(labels) {
+    print(direct.label(p, method="last.points"))
+  } else {
+    print(p)
+  }
+  dev.off()
+
+}
+
+###----------------------------------------------------------------------------
+### cpumemlogplot ends here
