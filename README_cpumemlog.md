@@ -85,9 +85,9 @@ TIME by command:
 
 and these two plots:
 
-[![CPU plot](https://github.com/gregorgorjanc/cpumemlog/raw/master/fig/cpumemlog_1234.txt_cpu_plot.png)](#CPUplot)
+[![CPU plot](fig/cpumemlog_1234.txt_cpu_plot.png)](#CPUplot)
 
-[![RAM plot](https://github.com/gregorgorjanc/cpumemlog/raw/master/fig/cpumemlog_1234.txt_mem_plot.png)](#RAMplot)
+[![RAM plot](fig/cpumemlog_1234.txt_mem_plot.png)](#RAMplot)
 
 Both scripts have some useful options, so make sure you check their
 documentation in the source Luke!
