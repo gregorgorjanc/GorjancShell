@@ -10,12 +10,20 @@
 
 dim()
 {
+  ## $1 $2 = potentially a delimiter, i.e., -d ,
   ## $@ = file names
-  local NAME FILE NROW NCOL
-  NAME=dim
+  local DELIM FILE NROW NCOL
+  if [[ $1 == "-d" ]]; then
+    DELIM=$2
+    shift 2
+  else
+    DELIM=" "
+  fi
+  # echo "DELIM is |$DELIM|"
+  # echo "args are $@"
   for FILE in $@; do
     NROW=$(wc -l $FILE | awk '{ print $1}')
-    NCOL=$(head -n 1 $FILE | awk '{ print NF }')
+    NCOL=$(head -n 1 $FILE | awk -F "$DELIM" '{ print NF }')
     echo "$NROW $NCOL $FILE"
     unset NROW NCOL
   done
@@ -25,8 +33,7 @@ export -f dim
 nrow()
 {
   ## $@ = file names
-  local NAME FILE
-  NAME=nrow
+  local FILE
   for FILE in $@; do
     wc -l $FILE
   done
@@ -35,13 +42,21 @@ export -f nrow
 
 ncol()
 {
+  ## $1 $2 = potentially a delimiter, i.e., -d ,
   ## $@ = file names
-  local NAME FILE TMP
-  NAME=ncol
+  local DELIM FILE NCOL
+  if [[ $1 == "-d" ]]; then
+    DELIM=$2
+    shift 2
+  else
+    DELIM=" "
+  fi
+  # echo "DELIM is |$DELIM|"
+  # echo "args are $@"
   for FILE in $@; do
-    TMP=$(head -n 1 $FILE | awk '{ print NF }')
-    echo "$TMP $FILE"
-    unset TMP
+    NCOL=$(head -n 1 $FILE | awk -F "$DELIM" '{ print NF }')
+    echo "$NCOL $FILE"
+    unset NCOL
   done
 }
 export -f ncol
