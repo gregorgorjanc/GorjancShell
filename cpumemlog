@@ -95,9 +95,6 @@ if [ -z $FOUT ]; then
   FOUT=cpumemlog_${STR}.txt
 fi
 
-echo $FOUT
-echo $PID
-exit 0
 rm -f $FOUT
 echo "DATE TIME PID PCPU PMEM RSS VSZ ETIME COMMAND" >> $FOUT
 
