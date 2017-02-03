@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### cpumemlog
-###----------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 
 NAME=$(basename $0)
 
@@ -12,7 +12,7 @@ usage()
     $NAME - Monitor CPU and RAM usage for a given process (and its children)
 
   SYNOPSIS
-    $NAME pid [string] [-t=1]
+    $NAME pid [string] [-t=1] [-o=<outputfilename>]
 
   DESCRIPTION
     pid
@@ -26,6 +26,10 @@ usage()
       Collect information in time intervals equal to x; this is passed to the
       sleep command so check its documentation on the format of x; default is
       10 seconds.
+    
+    -o=<path>, --out=<path>
+      Specify filename of output file. If not given, defaults to 
+      cpumemlog_<pid>[_string].txt
 
     -h, --help
       Print this output
@@ -66,6 +70,9 @@ for OPTION in $@; do
     -t=* | --time=*)
       TIME=$(echo $OPTION | sed -e "s/--time=//" -e "s/-t=//")
       ;;
+    -o=* | --out=*)
+      FOUT=$(echo $OPTION | sed -e "s/--out=//" -e "s/-o=//")
+      ;;
   esac
 done
 
@@ -84,8 +91,12 @@ else
   STR="${PID}_${2}"
 fi
 
-rm -f cpumemlog_${STR}.txt
-echo "DATE TIME PID PCPU PMEM RSS VSZ ETIME COMMAND" >> cpumemlog_${STR}.txt
+if [ -z $FOUT ]; then
+  FOUT=cpumemlog_${STR}.txt
+fi
+
+rm -f $FOUT
+echo "DATE TIME PID PCPU PMEM RSS VSZ ETIME COMMAND" >> $FOUT
 
 printOut()
 {
@@ -93,9 +104,9 @@ printOut()
   PID=$1
 
   ## Print everything except the header
-  ## echo `date +"%Y-%m-%d %H:%M:%S"` `aps -p $PID -o pid= -o pcpu= -o pmem= -o rss= -o vsz= -o time= -o comm= --no-headers -w -w` >> cpumemlog_${STR}.txt
+  ## echo `date +"%Y-%m-%d %H:%M:%S"` `aps -p $PID -o pid= -o pcpu= -o pmem= -o rss= -o vsz= -o time= -o comm= --no-headers -w -w` >> $FOUT
   ## BSD always prints the header
-  echo `date +"%Y-%m-%d %H:%M:%S"` `ps -p $PID -o pid= -o pcpu= -o pmem= -o rss= -o vsz= -o time= -o comm= -w -w | tail -n 1` >> cpumemlog_${STR}.txt
+  echo `date +"%Y-%m-%d %H:%M:%S"` `ps -p $PID -o pid= -o pcpu= -o pmem= -o rss= -o vsz= -o time= -o comm= -w -w | tail -n 1` >> $FOUT
 
   ## Any children?
   PIDC=$(pgrep -P $PID)
