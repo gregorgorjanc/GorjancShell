@@ -58,41 +58,67 @@ EOF
 }
 
 ## Defaults
+PID=
+STR=
 TIME=10
+FOUT=
 
-## Get options
-for OPTION in $@; do
-  case "$OPTION" in
+# argument parsing : http://mywiki.wooledge.org/BashFAQ/035
+position=0
+while :; do
+  case $1 in
     -h | --help )
       usage
       exit 0
       ;;
     -t=* | --time=*)
-      TIME=$(echo $OPTION | sed -e "s/--time=//" -e "s/-t=//")
+      TIME=$(echo $1 | sed -e "s/--time=//" -e "s/-t=//")
       ;;
     -o=* | --out=*)
-      FOUT=$(echo $OPTION | sed -e "s/--out=//" -e "s/-o=//")
+      FOUT=$(echo $1 | sed -e "s/--out=//" -e "s/-o=//")
       ;;
+    --)              # End of all options.
+      printf 'End of all options?'
+      shift
+      break
+      ;;
+    -?*)
+      printf 'WARNING: Unknown option (ignored): %s\n' "$1" >&2
+      ;;
+    *) # Default case: If no more options then break out of the loop.
+      position=$((position+1))
+      if [ ${#1} -eq 0 ]; then
+        break
+      fi
+      case $position in
+        1)
+          PID=$1
+          ;;
+        2)
+          STR=$1
+          ;;
+        *)
+          printf 'WARNING: Unknown positional argument (ignored): %s\n' "$1" >&2
+          exit 1
+     esac 
   esac
+  shift
 done
 
+
 ## Collect PID and STRING
-if [ "$1" == "" ]; then
+if [ -z "$PID" ]; then
   echo "Missing PID!"
   usage
   exit 1
-else
-  PID=$1
-fi
-
-if [ "$2" == "" ]; then
-  STR="${PID}"
-else
-  STR="${PID}_${2}"
 fi
 
 if [ -z $FOUT ]; then
-  FOUT=cpumemlog_${STR}.txt
+  if [ -z $STR ]; then
+    FOUT=cpumemlog_${PID}.txt
+  else
+    FOUT=cpumemlog_${PID}_${STR}.txt
+  fi
 fi
 
 rm -f $FOUT
