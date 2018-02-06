@@ -3,9 +3,6 @@
 #-------------------------------------------------------------------------------
 # What: Set server specific aliases and functions
 # Who: Gregor Gorjanc
-# When:
-#  * 2014-05 Added the diff functions
-#  * 2013-12 Initial version
 #-------------------------------------------------------------------------------
 
 server()
@@ -20,6 +17,14 @@ server()
 
   eval "alias ping${1}=\"ping ${2}\""
   eval "alias login${1}=\"ssh ${optSSH} ${3}@${2}\""
+
+  eval "rsyncFrom${1}()
+  {
+    local i
+    for i in \$@; do
+      rsync ${3}@${2}:\$i .
+    done
+  }; export -f rsyncFrom${1}"
 
   eval "pull${1}()
   {
