@@ -79,14 +79,18 @@ EOF
     rmMap()
     {
         if [ -e "$1" ]; then
-            rm -Rf "$1"
-            if [ -e "$1" ]; then
-                echo "Directory $1 not removed. Something went wrong!"
-            elif [ -n "$2" -a "$2" = "yes" ]; then
-                mkdir "$1"
-                echo "Directory $1 cleaned. "
+            if [ -d "$1" ]; then
+                rm -Rf "$1"
+                if [ -e "$1" ]; then
+                    echo "Directory $1 not removed. Something went wrong! "
+                elif [ -n "$2" -a "$2" = "yes" ]; then
+                    mkdir "$1"
+                    echo "Directory $1 cleaned. "
+                else
+                    echo "Directory $1 removed. "
+                fi
             else
-                echo "Directory $1 removed. "
+                echo "$1 is not a directory. Skipped! "
             fi
         else
             echo "Directory $1 doesn't exist. "
