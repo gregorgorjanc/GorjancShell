@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-02/02/2018
+04/04/2018
 
 Python version of cpumemlogplot.R written by Gregor Gorjanc.
 Author: Joanna Ilska
@@ -12,17 +12,12 @@ Optional arguments:
         - m - reporting in Mb (default Gb)
         - 2 - number of plots (default 1)
 
-WARNING: 
-    the plotting function tsplot will be soon removed from seaborn plotting library - the script may stop working
 """
 import matplotlib.pyplot as plt
 import seaborn as sb
 import pandas as pd
 import numpy as np
 import sys
-
-import warnings
-warnings.filterwarnings('ignore')
 
 
 np.set_printoptions(suppress=True)
@@ -39,12 +34,13 @@ try:
         else:
             pass        
             
-    
+    # Extract the job ID from the file name for further labeling
     jobID=filename.split('_')[1][:-4]
     
-    dat = pd.read_csv(filename, sep=' ', header=0)
+    # Read the measurements into pandas dataframe
+    dat = pd.read_csv(filename, sep=' ', header=0, error_bad_lines=False)
     
-    # Remove rows where date ="defunct"
+    # Remove rows where date ="defunct" - this is an artefact from R script by Gregor. In python/pandas, defunct lines are dealt with by error_bad_lines in parser
     dat = dat[dat.DATE != "defunct"]
     
     # Merge date and time
@@ -101,39 +97,62 @@ try:
     #################################################################
     # Plotting: 
     
+    # Set seaborn plotting colours
     sb.set()
     
-    # Rename the column 
-    dat = dat.rename(index=str, columns={"COMMAND":"PROCESS"})
+    # Set date as index
     dat = dat.set_index('DATE')
         
+    # Calculate the start time and times at the measurements
     start=min(dat.X)
     dat['H']=dat['X']-start
     
     dat['H']=dat['H'].astype('timedelta64[s]')/3600
     
+    # Split into RSS and CPU frames
+    R=dat[['H', 'PID', 'RSS']]
+    C=dat[['H', 'PID', 'PCPU']]
+    
+    # Pivot them, so that each process has a separate column and replace NaNs with 0s. 
+    Rpiv=R.pivot(index='H', columns='PID', values='RSS')
+    Cpiv=C.pivot(index='H', columns='PID', values='PCPU')
+    
+    # Extract the labels for the PIDs
+    k=dat[['PID', 'COMMAND']].drop_duplicates()
+    k=k.set_index('PID')
+    dic=k.to_dict()['COMMAND']
+    
+
     # Depending on arguments, one or two plots
     if '2' in args:
         fig1, ax1 = plt.subplots()
-        sb.tsplot(data=dat, time='H', condition="PROCESS", value="RSS", ax=ax1)
+        Rpiv.plot(ax=ax1)
+        handles, labels = ax1.get_legend_handles_labels()
+        new_labels=[dic[int(x)] for x in labels]
+        ax1.legend(handles, new_labels)
         ax1.set_ylabel("RAM ({})".format(binUnit))
         ax1.set_xlabel("Time in hours")
         fig1.tight_layout()
         plt.savefig("{}_RAM.jpg".format(jobID), dpi=199)
+        #plt.show()
+        
         
         fig2, ax2 = plt.subplots()
-        sb.tsplot(data=dat, time='H', condition="PROCESS", value="PCPU", ax=ax2)
+        Cpiv.plot(ax=ax2)
+        handles, labels = ax2.get_legend_handles_labels()
+        new_labels=[dic[int(x)] for x in labels]
+        ax2.legend(handles, new_labels)
         ax2.set_ylabel("CPU (%)")
         ax2.set_xlabel("Time in hours")
         fig2.tight_layout()
         plt.savefig("{}_CPU.jpg".format(jobID), dpi=199)   
-        
+        #plt.show()
         
     else:
         fig, (ax1, ax2) = plt.subplots(2, sharex=True)
         
-        sb.tsplot(data=dat, time='H', condition="PROCESS", value="RSS", ax=ax1)
-        sb.tsplot(data=dat, time='H', condition="PROCESS", value="PCPU", ax=ax2)
+        Rpiv.plot(ax=ax1)
+        Cpiv.plot(ax=ax2)
         
         ax1.set_xlabel('')
         ax2.set_xlabel("Time in hours")
@@ -141,11 +160,16 @@ try:
         ax1.set_ylabel("RAM ({})".format(binUnit))
         ax2.set_ylabel("CPU (%)")
         
+        handles, labels = ax2.get_legend_handles_labels()
+        new_labels=[dic[int(x)] for x in labels]
+        ax2.legend(handles, new_labels)
         ax1.legend_.remove()
         
         fig.tight_layout()
         
+        #plt.show()
         plt.savefig("{}_cpumem.jpg".format(jobID), dpi=199)
+        
 
 except NameError:
     print("Required for cpumemlog.py: <cpumemlog_jid.txt> <optional arguments (g, m and 2)>")
