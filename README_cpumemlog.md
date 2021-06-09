@@ -94,7 +94,7 @@ documentation in the source Luke!
 
 ## TODO (any volunteers?)
 
-* Describe the output from cpumemlog.sh in more detail (I keep forgetting
+* Describe the output from cpumemlog in more detail (I keep forgetting
   what those acronyms mean).
 
 * Compute cumulative usage for the monitored process and all its children.
