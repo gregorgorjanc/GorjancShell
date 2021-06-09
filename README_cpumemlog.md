@@ -16,7 +16,7 @@ it is tedious to stare at its dynamic output and quite hard to spot consumption 
 the peak and follow the trends etc. Yet another similar utility is [time](http://man7.org/linux/man-pages/man1/time.1.html), which though only gives
 consumption of resources at the peak.
 
-**cpumemlogplot** is a companion [R](http://www.r-project.org) script to cpumemlog.sh
+**cpumemlogplot** is a companion [R](http://www.r-project.org) script to cpumemlog
 used to summarize and plot the gathered data.
 
 ## Usage
@@ -27,7 +27,7 @@ has PID 1234, then we can monitor its CPU and RAM usage with (note the & charact
 that puts the script into background until the process stops running):
 
 ```shell
-cpumemlog.sh 1234 &
+cpumemlog 1234 &
 ```
 
 and the gathered data are stored into a file called cpumemlog_1234.txt:
@@ -46,7 +46,7 @@ DATE TIME PID PCPU PMEM RSS VSZ ETIME COMMAND
 which can be in turn summarised using:
 
 ```shell
-cpumemlogplot.R cpumemlog_1234.txt
+cpumemlogplot cpumemlog_1234.txt
 ```
 
 giving something like this:
