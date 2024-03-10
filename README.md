@@ -1,5 +1,5 @@
 # Gorjanc Shell
-Gregor Gorjanc's (bash) shell functions and scripts
+Gregor Gorjanc's shell functions and scripts
 
 ## Description
 
@@ -36,7 +36,7 @@ The functions/scripts are:
 Functions are stored in files named *func_foo.sh* while scripts are stored in
 files named *foo*.
 
-1. Save the files in your ~/bin folder
+1. Save the files in your ~/bin folder or clone repo and link the files to ~/bin or elsewhere
 2. Add ~/bin folder to your PATH variable, i.e., export PATH=~/bin:$PATH
 3. In order to be able to use functions, add the following code to your ~/.bashrc
 file for each function you want to use:
