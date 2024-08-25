@@ -75,7 +75,16 @@ HIST_STAMPS="yyyy-mm-dd"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git colored-man-pages colorize pip python brew)
+plugins=(zsh-syntax-highlighting fzf colorize colored-man-pages)
+# zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/README.md
+# zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions (not needed if using warp terminal)
+# fzf https://github.com/unixorn/fzf-zsh-plugin
+# colorize https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/colorize
+# colored-man-pages https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/colored-man-pages
+# brew https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/brew
+# git https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
+# pip https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/pip 
+# python https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/python
 
 source $ZSH/oh-my-zsh.sh
 
@@ -105,7 +114,6 @@ source $ZSH/oh-my-zsh.sh
 #       it from here
 
 # ---- KEY folders -------------------------------------------------------
-
 
 alias home="cd $HOME; pwd"
 alias Home=home
@@ -158,6 +166,10 @@ alias DropBox=dropbox
 export GOOGLEDRIVE="$STORAGES/GoogleDrive"
 alias googledrive="cd $GOOGLEDRIVE; pwd"
 alias GoogleDrive=googledrive
+
+# ---- MY ALIASES -------------------------------------------------------
+
+alias cat=bat
 
 # ---- XYZ ---------------------------------------------------------------
 

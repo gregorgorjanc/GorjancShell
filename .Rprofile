@@ -1,6 +1,6 @@
 
 options(
         ## Help: try all packages when searching
-        , help.try.all.packages=TRUE
+        help.try.all.packages=TRUE
         )
 
