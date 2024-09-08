@@ -1,8 +1,16 @@
-# Add commonly used folders to $PATH
-export PATH="$HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
 
 # Specify default editor: vim, code, ...
 export EDITOR=code
+
+# ---- FZF ---------------------------------------------------------------
+
+source <(fzf --zsh)
 
 # ---- OH MY ZSH ---------------------------------------------------------
 
@@ -13,13 +21,8 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
-
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+# ZSH_THEME="robbyrussell"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -52,7 +55,7 @@ ENABLE_CORRECTION="true"
 # You can also set it to another string to have that shown instead of the default red dots.
 # e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
 # Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -88,6 +91,12 @@ plugins=(zsh-syntax-highlighting fzf colorize colored-man-pages)
 
 source $ZSH/oh-my-zsh.sh
 
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+  autoload -Uz compinit
+  compinit
+fi
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -112,6 +121,13 @@ source $ZSH/oh-my-zsh.sh
 
 # TODO: move your stuff to 2_Areas/RC_FILES_or_something_like_this and source
 #       it from here
+
+# ---- OPENBLAS -------------------------------------------------------
+
+# TODO: Something ain't right with my Apple's Accelerate framework so momentarily using OpenBLAS!?
+# export LDFLAGS="-L/usr/local/opt/openblas/lib"
+# export CPPFLAGS="-I/usr/local/opt/openblas/include"
+# export PKG_CONFIG_PATH="/usr/local/opt/openblas/lib/pkgconfig"
 
 # ---- KEY folders -------------------------------------------------------
 
@@ -169,29 +185,56 @@ alias GoogleDrive=googledrive
 
 # ---- MY ALIASES -------------------------------------------------------
 
+alias cat_original=/bin/cat
 alias cat=bat
+eval $(thefuck --alias) # generates alias/function called fuck
+alias fix=fuck
+alias ls_original=/bin/ls
+alias ls=eza
+alias man_original=/usr/bin/man
+alias man=tldr
+alias py=python
+alias q=exit
+
+# ---- MY FUNCTIONS ------------------------------------------------------
+
+FUNCS="func_browse.sh"
+for FILE in ${FUNCS}; do
+  if [ -f "${HOME}/bin/${FILE}" ]; then
+    source ${HOME}/bin/${FILE}
+  fi
+done
 
 # ---- XYZ ---------------------------------------------------------------
 
-export PATH="/usr/local/opt/sphinx-doc/bin:$PATH"
+# TODO: Remove sphinx?
+# brew install sphinx
+# Error: sphinx has been disabled because it is using unsupported v2 and
+# source for v3 is not publicly available! It was disabled on 2023-08-29.
+# export PATH="/usr/local/opt/sphinx-doc/bin:$PATH"
 
 # ---- CONDA -------------------------------------------------------------
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/usr/local/Caskroom/mambaforge/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/usr/local/Caskroom/mambaforge/base/etc/profile.d/conda.sh" ]; then
-        . "/usr/local/Caskroom/mambaforge/base/etc/profile.d/conda.sh"
+    if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
+        . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
     else
-        export PATH="/usr/local/Caskroom/mambaforge/base/bin:$PATH"
+        export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
     fi
 fi
 unset __conda_setup
 
-if [ -f "/usr/local/Caskroom/mambaforge/base/etc/profile.d/mamba.sh" ]; then
-    . "/usr/local/Caskroom/mambaforge/base/etc/profile.d/mamba.sh"
+if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/mamba.sh" ]; then
+    . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/mamba.sh"
 fi
 # <<< conda initialize <<<
+
+alias conda=mamba # must come after the above conda initialise code!
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
