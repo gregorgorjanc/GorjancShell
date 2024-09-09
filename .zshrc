@@ -198,10 +198,13 @@ alias q=exit
 
 # ---- MY FUNCTIONS ------------------------------------------------------
 
-FUNCS="func_browse.sh"
-for FILE in ${FUNCS}; do
+FILES=("func_browse.sh" "func_dim.sh")
+# echo "${FILES[@]}"
+for FILE in "${FILES[@]}"; do
+  # echo "$FILE"
   if [ -f "${HOME}/bin/${FILE}" ]; then
-    source ${HOME}/bin/${FILE}
+    # echo "$FILE found"
+    source "${HOME}/bin/${FILE}"
   fi
 done
 
