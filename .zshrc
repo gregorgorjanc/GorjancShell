@@ -198,7 +198,9 @@ alias q=exit
 
 # ---- MY FUNCTIONS ------------------------------------------------------
 
-FILES=("func_browse.sh" "func_dim.sh")
+FILES=("func_browse.sh"
+       "func_dim.sh"
+       "func_find.sh")
 # echo "${FILES[@]}"
 for FILE in "${FILES[@]}"; do
   # echo "$FILE"
