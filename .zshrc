@@ -203,7 +203,9 @@ FILES=("func_browse.sh"
        "func_find.sh"
        "func_hi.sh"
        "func_psu.sh"
-       func_remove_header.sh
+       "func_remove_header.sh"
+       "func_rm.sh"
+       "func_rows_cols.sh"
       )
 # echo "${FILES[@]}"
 for FILE in "${FILES[@]}"; do
