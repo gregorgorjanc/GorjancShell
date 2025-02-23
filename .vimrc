@@ -3,7 +3,7 @@
 
 " Runtime Path Manipulation
 filetype off
-execute pathogen#infect()
+"execute pathogen#infect()
 
 " No need to be compatible with vi
 set nocompatible
@@ -33,7 +33,7 @@ endif
 
 " Background
 set background=light
-colorscheme solarized
+"colorscheme solarized
 set cursorline
 set cursorcolumn
 
