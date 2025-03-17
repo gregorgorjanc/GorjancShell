@@ -86,7 +86,7 @@ plugins=(zsh-syntax-highlighting fzf colorize colored-man-pages)
 # colored-man-pages https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/colored-man-pages
 # brew https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/brew
 # git https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
-# pip https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/pip 
+# pip https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/pip
 # python https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/python
 
 source $ZSH/oh-my-zsh.sh
@@ -206,6 +206,8 @@ FILES=("func_browse.sh"
        "func_remove_header.sh"
        "func_rm.sh"
        "func_rows_cols.sh"
+       "func_see.sh"
+       "func_server.sh"
       )
 # echo "${FILES[@]}"
 for FILE in "${FILES[@]}"; do
@@ -247,5 +249,11 @@ fi
 
 alias conda=mamba # must come after the above conda initialise code!
 
+# ---- POWERSHELL p10k ---------------------------------------------------
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# ---- AIR R FORMATTER ---------------------------------------------------
+
+source "$HOME/.local/bin/env"
